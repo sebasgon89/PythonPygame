@@ -21,11 +21,20 @@ WHITE = (255, 255, 255)
 # Screen information and other variables
 SCREEN_WIDTH = 400
 SCREEN_HEIGHT = 600
-SPEED = 5
+SPEED = 3
+SCORE = 0
+
+# Setting up fonts
+font = pygame.font.SysFont("Verdana", 60)
+font_small = pygame.font.SysFont("Verdana", 20)
+game_over = font.render("Game over", True, BLACK)
+
+# Background
+background = pygame.image.load("AnimatedStreet.png")
 
 DISPLAYSURF = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
 DISPLAYSURF.fill(WHITE)
-pygame.display.set_caption("Game")
+pygame.display.set_caption("Autitos")
 
 
 class Enemy(pygame.sprite.Sprite):
@@ -36,8 +45,10 @@ class Enemy(pygame.sprite.Sprite):
         self.rect.center = (random.randint(40, SCREEN_WIDTH-40), 0)
 
     def move(self):
-        self.rect.move_ip(0, 3)
+        global SCORE
+        self.rect.move_ip(0, SPEED)
         if self.rect.bottom > 600:
+            SCORE += 1
             self.rect.top = 0
             self.rect.center = (random.randint(30, 370), 0)
 
@@ -88,18 +99,21 @@ while True:
     # Cycles through all events
     for event in pygame.event.get():
         if event.type == INC_SPEED:
-            SPEED += 2
-
+            SPEED += 0.5
         if event.type == QUIT:
             pygame.quit()
             sys.exit()
 
-    P1.update()
-    E1.move()
+    # P1.update()
+    # E1.move()
 
-    DISPLAYSURF.fill(WHITE)
+    # DISPLAYSURF.fill(WHITE)
     # P1.draw(DISPLAYSURF)
     # E1.draw(DISPLAYSURF)
+
+    DISPLAYSURF.blit(background, (0,0))
+    scores = font_small.render(str(SCORE), True, BLACK)
+    DISPLAYSURF.blit(scores, (10,10))
 
     # Moves and Re-draws all sprites
     for entity in all_sprites:
@@ -108,7 +122,12 @@ while True:
 
     # To be run if collisions occur
     if pygame.sprite.spritecollideany(P1, enemies):
+        pygame.mixer.Sound("crash.wav").play()
+        time.sleep(0.5)
+
         DISPLAYSURF.fill(RED)
+        DISPLAYSURF.blit(game_over, (30, 250))
+
         pygame.display.update()
         for entity in all_sprites:
             entity.kill()
