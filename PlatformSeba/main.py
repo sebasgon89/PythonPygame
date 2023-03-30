@@ -1,6 +1,6 @@
 # https://coderslegacy.com/python/pygame-platformer-game-development/
 
-import pygame
+import pygame, sys
 from pygame.locals import *
 
 pygame.init()
@@ -22,7 +22,7 @@ class Player(pygame.sprite.Sprite):
     def __init__(self):
         super().__init__()
         self.surf = pygame.Surface((30, 30))
-        self.surf.fill((128,255,40))
+        self.surf.fill((128, 255, 40))
         self.rect = self.surf.get_rect(center = (10, 420))
 
 
@@ -36,3 +36,21 @@ class Platform(pygame.sprite.Sprite):
 
 PT1 = Platform()
 P1 = Player()
+
+all_sprites = pygame.sprite.Group()
+all_sprites.add(PT1)
+all_sprites.add(P1)
+
+while True:
+    for event in pygame.event.get():
+        if event.type == QUIT:
+            pygame.quit()
+            sys.exit()
+
+    displaysurface.fill((0, 0, 0))
+
+    for entity in all_sprites:
+        displaysurface.blit(entity.surf, entity.rect)
+
+    pygame.display.update()
+    FramePerSec.tick(FPS)
